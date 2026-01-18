@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Pro - All-in-One</title>
+    <title>Calculadora</title>
     <style>
-        /* CSS INTEGRADO */
         * {
             margin: 0;
             padding: 0;
@@ -149,7 +148,6 @@
     </div>
 
     <script>
-        /* JAVASCRIPT INTEGRADO */
         const currentDisplay = document.getElementById('current-operation');
         const previousDisplay = document.getElementById('previous-operation');
 
@@ -157,7 +155,6 @@
             if (currentDisplay.innerText === '0' && number !== '.') {
                 currentDisplay.innerText = number;
             } else {
-                // Impede múltiplos pontos decimais
                 if (number === '.' && currentDisplay.innerText.includes('.')) return;
                 currentDisplay.innerText += number;
             }
@@ -167,7 +164,6 @@
             const lastChar = currentDisplay.innerText.slice(-1);
             const ops = ['+', '-', '*', '/', '.'];
             
-            // Se o último caractere for operador, substitui pelo novo
             if (ops.includes(lastChar)) {
                 currentDisplay.innerText = currentDisplay.innerText.slice(0, -1) + op;
             } else {
@@ -190,11 +186,9 @@
 
         function calculate() {
             try {
-                // eval() processa a string matemática, incluindo ** para potência
                 let expression = currentDisplay.innerText;
                 let result = eval(expression);
 
-                // Formata o resultado para não quebrar o layout
                 if (!Number.isInteger(result)) {
                     result = parseFloat(result.toFixed(6));
                 }
