@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Pro - All-in-One</title>
+    <style>
+        /* CSS INTEGRADO */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #0f0f1a;
+            color: white;
+        }
+
+        .calculator {
+            background: #1c1c2d;
+            padding: 25px;
+            border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            width: 350px;
+            border: 1px solid #33334d;
+        }
+
+        .display {
+            background: #0f0f1a;
+            padding: 25px;
+            text-align: right;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        #previous-operation {
+            color: #7a7a9a;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            height: 1.2rem;
+        }
+
+        #current-operation {
+            font-size: 2.5rem;
+            font-weight: 500;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        button {
+            height: 65px;
+            border-radius: 18px;
+            border: none;
+            font-size: 1.4rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #2a2a40;
+            color: #e0e0e0;
+        }
+
+        button:hover {
+            background: #3a3a5a;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0px);
+        }
+
+        .btn-op {
+            background: #6c5ce7;
+            color: white;
+        }
+
+        .btn-op:hover {
+            background: #8275e9;
+        }
+
+        .btn-special {
+            background: #ff7675;
+            color: white;
+        }
+
+        .btn-special:hover {
+            background: #ff8e8d;
+        }
+
+        .btn-equal {
+            background: #00b894;
+            color: white;
+        }
+
+        .btn-equal:hover {
+            background: #55efc4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <div class="display">
+            <div id="previous-operation"></div>
+            <div id="current-operation">0</div>
+        </div>
+        
+        <div class="buttons">
+            <button class="btn-special" onclick="clearDisplay()">AC</button>
+            <button class="btn-special" onclick="deleteDigit()">DEL</button>
+            <button class="btn-op" onclick="appendOperation('**')">xʸ</button>
+            <button class="btn-op" onclick="appendOperation('/')">÷</button>
+            
+            <button onclick="appendNumber('7')">7</button>
+            <button onclick="appendNumber('8')">8</button>
+            <button onclick="appendNumber('9')">9</button>
+            <button class="btn-op" onclick="appendOperation('*')">×</button>
+            
+            <button onclick="appendNumber('4')">4</button>
+            <button onclick="appendNumber('5')">5</button>
+            <button onclick="appendNumber('6')">6</button>
+            <button class="btn-op" onclick="appendOperation('-')">-</button>
+            
+            <button onclick="appendNumber('1')">1</button>
+            <button onclick="appendNumber('2')">2</button>
+            <button onclick="appendNumber('3')">3</button>
+            <button class="btn-op" onclick="appendOperation('+')">+</button>
+            
+            <button onclick="appendNumber('0')">0</button>
+            <button onclick="appendNumber('.')">.</button>
+            <button class="btn-op" onclick="calculateSqrt()">√</button>
+            <button class="btn-equal" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        /* JAVASCRIPT INTEGRADO */
+        const currentDisplay = document.getElementById('current-operation');
+        const previousDisplay = document.getElementById('previous-operation');
+
+        function appendNumber(number) {
+            if (currentDisplay.innerText === '0' && number !== '.') {
+                currentDisplay.innerText = number;
+            } else {
+                // Impede múltiplos pontos decimais
+                if (number === '.' && currentDisplay.innerText.includes('.')) return;
+                currentDisplay.innerText += number;
+            }
+        }
+
+        function appendOperation(op) {
+            const lastChar = currentDisplay.innerText.slice(-1);
+            const ops = ['+', '-', '*', '/', '.'];
+            
+            // Se o último caractere for operador, substitui pelo novo
+            if (ops.includes(lastChar)) {
+                currentDisplay.innerText = currentDisplay.innerText.slice(0, -1) + op;
+            } else {
+                currentDisplay.innerText += op;
+            }
+        }
+
+        function clearDisplay() {
+            currentDisplay.innerText = '0';
+            previousDisplay.innerText = '';
+        }
+
+        function deleteDigit() {
+            if (currentDisplay.innerText.length > 1) {
+                currentDisplay.innerText = currentDisplay.innerText.slice(0, -1);
+            } else {
+                currentDisplay.innerText = '0';
+            }
+        }
+
+        function calculate() {
+            try {
+                // eval() processa a string matemática, incluindo ** para potência
+                let expression = currentDisplay.innerText;
+                let result = eval(expression);
+
+                // Formata o resultado para não quebrar o layout
+                if (!Number.isInteger(result)) {
+                    result = parseFloat(result.toFixed(6));
+                }
+
+                previousDisplay.innerText = expression + " =";
+                currentDisplay.innerText = result;
+            } catch (e) {
+                currentDisplay.innerText = "Erro";
+                setTimeout(clearDisplay, 1500);
+            }
+        }
+
+        function calculateSqrt() {
+            try {
+                const value = eval(currentDisplay.innerText);
+                if (value < 0) {
+                    currentDisplay.innerText = "Erro";
+                } else {
+                    const result = Math.sqrt(value);
+                    previousDisplay.innerText = `√(${currentDisplay.innerText})`;
+                    currentDisplay.innerText = Number.isInteger(result) ? result : result.toFixed(6);
+                }
+            } catch {
+                currentDisplay.innerText = "Erro";
+            }
+        }
+    </script>
+</body>
+</html>
